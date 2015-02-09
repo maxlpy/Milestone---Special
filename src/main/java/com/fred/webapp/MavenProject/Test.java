@@ -5,7 +5,6 @@ public class Test {
 		String str = "Hello ";
 		String str1 = "World!";
 		
-		
 		System.out.println(str + str1);
 	}
 }
