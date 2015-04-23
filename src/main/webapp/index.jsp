@@ -8,6 +8,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1 align="center">Welcome to CSC591 DevOps Milestone Special</h1>
     </body>
 </html>
