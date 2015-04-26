@@ -64,6 +64,7 @@ Install the following **ON ALL THREE INSTANCES (Stage I, II and III)** to achiev
 In addition, every stage will have individual tools and development environments which are stated below according to every stage's individual requirement.
 
 **Stage I: Development Sandbox** 
+
 This development sandbox is used by developers. For the first stage the developer would build project using DEVELOPER tools such as git, eclipse, eclipse plugins such as find bugs for testing Every successful built would be pushed to remote git repository. 
 
 The following tools are installed at Stage I:
@@ -74,6 +75,7 @@ The following tools are installed at Stage I:
 
  
 **Stage II: Pre-Production Sandbox**
+
 At the 2nd stage, Jenkins would is set up which is contantly monitoring the remote repository for any changes. For every change it builds automatically and every successfull build is then push to the production environment using git hooks
 
 The following tools are installed at Stage II:
@@ -139,98 +141,53 @@ Tasks at Every Stage
 ## Stage II: Setup Pre-Production Sandbox
 
 ### A. Build Step using Jenkins
+Jenkins is set up to poll remote git repository every 5 minutes.
+If there is a new commit in the remote repository then Jenkins automatically pulls the new commits and builds the project locally.
+If the project is successfully built then the code is pushed to the production server using git hook
 
-### C.  Pushing code to Production
+### B.  Pushing code to Production
 
-Make canary1 and canary2 remote repositories to master. We will use git to deploy the code remotely using `post-receive hook` in bare git repository
+Make production server remote repositories to pre-production server. We will use git to deploy the code remotely using `post-receive hook` in bare git repository.
  
-The following steps should be followed to make canary1 and canary2 as remote repository of master
+The following steps should be followed to make production server as remote repository of pre-production server.
 
--- Steps for Master
- 1. `ssh` to master using `ssh -i Nikhil.pem ubuntu@52.4.40.18` where `Nikhil.pem` is the AWS key file attached with this submission
- 2. Clone [Milestone---Deploy](https://github.com/nkatre/Milestone---Deploy) repository
- 3. cd Milestone---Deploy
- 4. Transfer the key file Nikhil.pem to master from local using the command :
-
-    scp -i Nikhil.pem Nikhil.pem ubuntu@52.4.40.18
- 5. Generate ssh key at master and bind AWS key (Nikhil.pem) with this ssh key as follows
-
-    ssh-keygen 
-
-    cat ~/.ssh/id_rsa.pub | ssh -i Nikhil.pem ubuntu@52.5.33.235 "cat >> .ssh/authorized_keys"
-
-    cat ~/.ssh/id_rsa.pub | ssh -i Nikhil.pem ubuntu@52.5.15.126 "cat >> .ssh/authorized_keys"
-6. Bind this key with ssh command at master for authentication
-
-     ssh-add Nikhil.pem
-
-7. Setup SSH at MASTER
+ - Add rsa_pub key with ssh
+```bash
+$ ssh-keygen (Generate ssh key)
+$ ssh-add 
+```
+ - Add git remote at Pre-Production server
 
 ```bash
-$ ssh-add Nikhil.pem
+$ git remote add production ssh://152.7.99.118/home/nkatre/production.git
+
 ```
 
-8. Add git remote
+
+### Create a bare repository at Production Server
 
 ```bash
-$ git remote add blue ssh://ubuntu@52.5.33.235/home/nkatreblue.git
-$ git remote add green ssh://ubuntu@52.5.15.126/home/nkatre/green.git
-```
-Setup remote git repo on canary1
-
-### Create a bare repository
-
-```bash
-$ mkdir blue.git
-$ cd blue.git
+$ cd $HOME
+$ mkdir production.git
+$ mkdir production.www
+$ cd production.git
 $ git init --bare
 ```
 
 ### Set GIT_WORK_TREE
 
 ```bash
-$ mkdir /home/ubuntu/blue-www/
 $ cat > hooks/post-receive
 #!/bin/sh
-GIT_WORK_TREE=/home/ubuntu/blue-www/ git checkout -f
+GIT_WORK_TREE=/home/nkatre/production-www/ git checkout -f
 
 
 Make post-receive executable:
 $ chmod +x hooks/post-receive
-
-Select "All traffic" as inbound and outbound rules for EC2 instance
-```
-
-## Setup remote git repo on canary2
-
-### Create a bare repository
-
-```bash
-$ mkdir green.git
-$ cd green.git
-$ git init --bare
-```
-
-### Set GIT_WORK_TREE
-
-```bash
-$ mkdir /home/ubuntu/green-www/
-$ cat > hooks/post-receive
-#!/bin/sh
-GIT_WORK_TREE=/home/ubuntu/green-www/ git checkout -f
-
-
-Make post-receive executable:
-$ chmod +x hooks/post-receive
-
-
-Select "All traffic" as inbound and outbound rules for EC2 instance
 ```
 **OUTPUT:**
-1. Pushing to blue repository (Canary1)
+1. Pushing to production repository
 ![BluePush](https://github.com/nkatre/Milestone---Deploy/blob/master/outputImages/bluePush.png)
-2. Pushing to green repository (Canary2)
-![GreenPush](https://github.com/nkatre/Milestone---Deploy/blob/master/outputImages/greenPush.png)
 
 
 ## Stage III: Monitoring deployed application
