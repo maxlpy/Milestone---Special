@@ -40,7 +40,7 @@ For Milestone Special we have implemented a new deployment strategy called **thr
 
 - **Stage II**: The QA and UAT tests are handled in 2nd stage called Pre-Production Stage, which is a controlled development and testing enviorment. At this stage we have used Jenkins as built and continuous integration tool. Jenkins constantly monitor remote git repositories for any changes. For every change it will build the project automatically. 
 
-- **Stage III**: after exhaustive development and testing, every successfull built by Jenkins is automatically pushed to highly controlled Production Sandbox, where it is constantly monitored using parameters such as traffic utilization, CPU usage, Memory usage and etc. 
+- **Stage III**: After exhaustive development and testing, every successfull built by Jenkins is automatically pushed to highly controlled Production Sandbox, where it is constantly monitored using parameters such as traffic utilization, CPU usage, Memory usage and etc. 
 
 
 Implementation Detail
