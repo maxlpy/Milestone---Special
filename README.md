@@ -168,6 +168,10 @@ We have used [remmina](https://apps.ubuntu.com/cat/applications/saucy/remmina/) 
    Jenkins built
 ![pushToProduction.sh](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/pushToProduction.png)
 
+ - Console Output of Built of Jenkins which is triggered due to change
+   in remote repository
+![triggeredBuiltOutput](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/jenkinsOutput.png)
+
 ### B.  Pushing code to Production
 
 We made production server remote repository to pre-production server. We will use git to deploy the code remotely using `post-receive hook` in bare git repository.
@@ -208,9 +212,8 @@ Make post-receive executable:
 $ chmod +x hooks/post-receive
 ```
 **OUTPUT:**
-1. Manually Pushing to production repository output. The same task is achieved using Jenkins
+ 1. Manually Pushing to production repository output. The same task is achieved using Jenkins by pushToProduction.sh script
 ![push](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/push.png)
-
 
 
 ## Stage III: Monitoring deployed application
