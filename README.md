@@ -40,7 +40,7 @@ For Milestone Special we have implemented a new deployment strategy called **thr
 
 - **Stage II**: The QA and UAT tests are handled in 2nd stage called Pre-Production Stage, which is a controlled development and testing enviorment. At this stage we have used Jenkins as built and continuous integration tool. Jenkins constantly monitor remote git repositories for any changes. For every change it will build the project automatically. 
 
-- **Stage III**: After exhaustive development and testing, every successfull built by Jenkins is automatically pushed to highly controlled Production Sandbox, where it is constantly monitored using parameters such as traffic utilization, CPU usage, Memory usage and etc. 
+- **Stage III**: after exhaustive development and testing, every successfull built by Jenkins is automatically pushed to highly controlled Production Sandbox, where it is constantly monitored using parameters such as traffic utilization, CPU usage, Memory usage and etc. 
 
 
 Implementation Detail
@@ -108,6 +108,10 @@ The following tool is installed at Stage II:
 Tasks at Every Stage
 -------------
 
+We have used [remmina](https://apps.ubuntu.com/cat/applications/saucy/remmina/) to remote rdp into Ubuntu environments (development and production sandbox) from Ubuntu environment (pre-production sandbox)
+
+![remmina](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/remmina.png)
+
 ## Stage I: Setup Development Sandbox
 
 ### A. Developing Testing and Building Application
@@ -115,6 +119,9 @@ Tasks at Every Stage
  - Developers would use eclipse to develop the application.
  - Eclipse plugins such as FindBugs can be used for testing and static
    analysis.
+ - Below is the image of eclipse with FindBugs plugin and other necessary plugins
+
+![eclipse](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/eclipse.png)
 
 ### B. Building Application locally
 
@@ -122,6 +129,8 @@ Tasks at Every Stage
     environment for the application.
  - In this case, for J2EE maven project, we built the application
    locally using tomcat server
+ - The output after building the application is as follows
+ ![output](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/outputDev.png)  
 
 ### C.  Pushing code to remote repository
 
@@ -141,13 +150,27 @@ Tasks at Every Stage
 ## Stage II: Setup Pre-Production Sandbox
 
 ### A. Build Step using Jenkins
-Jenkins is set up to poll remote git repository every 5 minutes.
-If there is a new commit in the remote repository then Jenkins automatically pulls the new commits and builds the project locally.
-If the project is successfully built then the code is pushed to the production server using git hook
+
+ - Jenkins is set up to poll remote git repository every 1 minute. If
+   there is a new commit in the remote repository then Jenkins
+   automatically pulls the new commits and builds the project locally.
+
+![triggeredBuilt](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/jenkins3.png)
+
+ - If the project is successfully built then the code is pushed to the
+   production server using git hook
+ - Jenkins is configured to execute a shell script after each successful built to push the code to production server
+
+![triggeredPush](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/jenkins4.png) 
+
+ - The following are the contents of the script pushToProduction.sh
+   which would push the code to Production server after successful
+   Jenkins built
+![pushToProduction.sh](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/pushToProduction.png)
 
 ### B.  Pushing code to Production
 
-Make production server remote repositories to pre-production server. We will use git to deploy the code remotely using `post-receive hook` in bare git repository.
+We made production server remote repository to pre-production server. We will use git to deploy the code remotely using `post-receive hook` in bare git repository.
  
 The following steps should be followed to make production server as remote repository of pre-production server.
 
@@ -162,7 +185,6 @@ $ ssh-add
 $ git remote add production ssh://152.7.99.118/home/nkatre/production.git
 
 ```
-
 
 ### Create a bare repository at Production Server
 
@@ -186,16 +208,21 @@ Make post-receive executable:
 $ chmod +x hooks/post-receive
 ```
 **OUTPUT:**
-1. Pushing to production repository
-![BluePush](https://github.com/nkatre/Milestone---Deploy/blob/master/outputImages/bluePush.png)
+1. Manually Pushing to production repository output. The same task is achieved using Jenkins
+![push](https://github.com/maxlpy/Milestone---Special/blob/master/outputImages/push.png)
+
 
 
 ## Stage III: Monitoring deployed application
 
 After deployment of new version on Production Sandbox, we are remotely monitoring the health of this server by parameters such as CPU usage, memory utilization, Fault number and Alert number.
 
-One can visit **http://152.7.99.118/monitor.html** to check the status of the server.
-
+One can run the following commands to check the status of the server using monitor.
+1. Start monitor
+    node main.js
+2. Open monitor in a browser
+    xdg-open www/index.html     
+  
 We have also set a threshold parameter to simulate server failure condition. We use two paramaters which are constantly monitored.
 
     1. Memory Usage
